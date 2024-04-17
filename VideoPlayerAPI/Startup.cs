@@ -15,6 +15,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+        });
     }
 
     public void Configure(IApplicationBuilder app)

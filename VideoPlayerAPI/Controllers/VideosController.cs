@@ -1,132 +1,91 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using VideoPlayerAPI.BusinessLogic.Videos.Commands;
+using VideoPlayerAPI.BusinessLogic.Videos.Queries;
 using VideoPlayerAPI.Models;
 
 namespace VideoPlayerAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class VideosController(IWebHostEnvironment environment, VideoPlayerDbContext dbContext) : ControllerBase
+    public class VideosController(IMediator mediator) : ControllerBase
     {
-        private static readonly List<Video> videos =
-        [
-            new Video { 
-                Id = 1, 
-                Title = "Sample Video 1", 
-                Description = "Description of sample video 1", 
-                FilePathOrUrl = "https://example.com/video1.mp4",
-                FileName = "video1",
-                FileSize = 1024,
-                ContentType = "video/mp4",
-                Duration = TimeSpan.FromMinutes(5),
-                UploadDate = DateTime.UtcNow},
-            new Video {
-                Id = 2,
-                Title = "Sample Video 2",
-                Description = "Description of sample video 2",
-                FilePathOrUrl = "https://example.com/video2.mp4",
-                FileName = "video2",
-                FileSize = 2048,
-                ContentType = "video/mp4",
-                Duration = TimeSpan.FromMinutes(10),
-                UploadDate = DateTime.UtcNow}
-        ];
-
-        private readonly IWebHostEnvironment _environment = environment;
-        private readonly VideoPlayerDbContext _dbContext = dbContext;
+        private readonly IMediator _mediator = mediator;
 
         // GET: api/videos
         [HttpGet]
-        public ActionResult<IEnumerable<Video>> GetVideos()
+        public async Task<ActionResult> GetVideos()
         {
-            return Ok(videos);
+            var query = new GetVideosQuery();
+
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
         }
 
         // GET: api/videos/{id}
         [HttpGet("{id}")]
-        public ActionResult<Video> GetVideoById(int id)
+        public async Task<ActionResult> GetVideoById(int id)
         {
-            var video = videos[id];
-            if (video == null)
+            var query = new GetVideoByIdQuery
+            {
+                VideoId = id
+            };
+
+            var result = await _mediator.Send(query);
+
+            if (result == null)
             {
                 return NotFound();
             }
 
-            return Ok(video);
+            return Ok(result);
         }
 
         // POST: api/videos/upload
         [HttpPost("upload")]
-        public async Task<ActionResult<Video>> UploadVideo(IFormFile file, [FromBody] Video video)
+        public async Task<ActionResult> UploadVideo([FromForm] UploadVideoWebModel webModel)
         {
-            if (file == null || file.Length == 0)
+            var command = new UploadVideoCommand
             {
-                return BadRequest("No file uploaded.");
-            }
+                Title = webModel.Title,
+                Description = webModel.Description,
+                File = webModel.File
+            };
 
-            var filePath = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var uploadPath = Path.Combine(_environment.WebRootPath, "uploads", filePath);
+            var result = await _mediator.Send(command);
 
-            using (var stream = new FileStream(uploadPath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            //var relativePath = Path.Combine("uploads", fileName).Replace("\\", "/");
-            //var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
-            //var fileUrl = $"{baseUrl}/{relativePath}";
-
-            video.FilePathOrUrl = filePath;
-            video.FileName = file.FileName;
-            video.FileSize = (int)Math.Min(file.Length, int.MaxValue);
-            video.ContentType = file.ContentType;
-            video.UploadDate = DateTime.Now;
-
-            _dbContext.Videos.Add(video);
-            await _dbContext.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetVideoById), new { video.Id}, video);
-        }
-
-        // POST: api/videos
-        [HttpPost]
-        public ActionResult<Video> CreateVideo([FromBody] Video video)
-        {
-            video.Id = videos.Count + 1;
-            video.UploadDate = DateTime.UtcNow;
-            videos.Add(video);
-
-            return CreatedAtAction(nameof(GetVideoById), new { video.Id }, video);
+            return Ok(result);
         }
 
         // PUT: api/videos/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateVideo(int id, [FromBody] Video updatedVideo)
+        public async Task<ActionResult> UpdateVideo([FromRoute] int id, [FromBody] UpdateVideoWebModel webModel)
         {
-            var videoIndex = videos.FindIndex(v => v.Id == id);
-            if (videoIndex == -1)
+            var command = new UpdateVideoCommand
             {
-                return NotFound();
-            }
+                Id = id,
+                Title = webModel.Title,
+                Description = webModel.Description
+            };
 
-            updatedVideo.Id = id;
-            videos[videoIndex] = updatedVideo;
+            var result = await _mediator.Send(command);
 
-            return NoContent();
+            return Ok(result);
         }
 
         // DELETE: api/videos/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteVideo(int id)
+        public async Task<ActionResult> DeleteVideo(int id)
         {
-            var videoToRemove = videos[id];
-            if (videoToRemove == null)
+            var command = new DeleteVideoCommand
             {
-                return NotFound();
-            }
+                VideoId = id
+            };
 
-            videos.Remove(videoToRemove);
+            var result = await _mediator.Send(command);
 
-            return NoContent();
+            return Ok(result);
         }
     }
 }
