@@ -7,9 +7,10 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Commands
         public int VideoId { get; set; }
     }
 
-    internal class DeleteVideoCommandHandler(VideoPlayerDbContext dbContext) : IRequestHandler<DeleteVideoCommand, IResult>
+    internal class DeleteVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment) : IRequestHandler<DeleteVideoCommand, IResult>
     {
         private readonly VideoPlayerDbContext _dbContext = dbContext;
+        private readonly IWebHostEnvironment _environment = environment;
 
         public async Task<IResult> Handle(DeleteVideoCommand command, CancellationToken cancellationToken)
         {
@@ -18,6 +19,13 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Commands
             if(video == null)
             {
                 return Results.NotFound();
+            }
+
+            var filePath = Path.Combine(_environment.WebRootPath, "uploads", video.FilePathOrUrl);
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
             }
 
             _dbContext.Videos.Remove(video);
