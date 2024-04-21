@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  sql-server:
+    container_name: sql-server
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "E6rLVj7sHW8v2hx"
+    volumes:
+      - ./data:/var/opt/mssql/data
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
