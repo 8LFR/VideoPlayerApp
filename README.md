@@ -1,13 +1,34 @@
-How about creating a multimedia application like a video player or an image viewer? Here's how you could integrate various concepts into such a project:
+# VideoPlayer
 
-1. Asynchronous Programming: Implement asynchronous loading of multimedia files to ensure smooth playback without blocking the UI thread. This could involve loading images or video frames asynchronously as needed for display.
+This project is a clone of YouTube built using the .NET framework for the backend and Angular for the frontend. It aims to replicate the core functionalities of YouTube, allowing users to upload, view, like, comment on, and share videos.
 
-2. Threading: Use threads to perform tasks such as file I/O operations or image processing in the background, keeping the UI responsive. For example, you could use a separate thread to handle loading and decoding of video frames while the main thread manages user interaction.
+## Features (ongoing)
 
-3. Parallel Programming: Utilize parallel programming techniques to optimize performance, such as parallelizing image processing algorithms or decoding multiple video frames simultaneously.
+* **User Authentication**: Users can sign up, sign in, and manage their accounts securely.
+* **Video Management**: Upload, edit, and delete videos with ease.
+* **Video Playback**: Seamless video playback with support for various formats.
+* **Likes and Comments**: Engage with videos through likes and comments.
+* **Search Functionality**: Find specific videos quickly using the search bar.
+* **Responsive Design**: The application is designed to be fully responsive, ensuring a seamless experience across devices.
 
-4. Native Interoperability: Incorporate native libraries or APIs for advanced multimedia functionalities. For instance, you could use native libraries for video decoding or image processing, interfacing with them through platform invocation (P/Invoke) or COM interop.
+## Technologies Used
 
-5. Memory Management: Implement efficient memory management strategies to handle large multimedia files and prevent memory leaks. Utilize techniques like object pooling, proper disposal of resources, and optimizing memory usage in performance-critical sections of the application.
+* **.NET Framework**: Utilized for building the backend API and handling server-side logic.
+* **Angular**: Used for creating the dynamic and interactive frontend interface.
+* **HTML/CSS**: Basic building blocks for structuring and styling the application.
+* **TypeScript**: Enhances JavaScript with static typing for better development experience.
+* **Bootstrap**: Provides pre-styled components for faster and consistent UI development.
 
-By building a multimedia application with these features, you can explore and apply a wide range of concepts in .NET development, from basic asynchronous programming to more advanced topics like native interoperability and memory management.
+## Getting Started
+
+To get started with the project, follow these steps:
+
+1. Clone this repository to your local machine.
+2. Navigate to the `VideoPlayerAPI` directory and run `dotnet restore` to install backend dependencies.
+3. Run `dotnet run` to start the backend server.
+4. Navigate to the `VideoPlayerClient` directory and run `npm install` to install frontend dependencies.
+5. Run `ng serve` to start the frontend server.
+6. Open your web browser and navigate to `http://localhost:4200` to view the application.
+
+## License
+This project is licensed under the MIT License.
