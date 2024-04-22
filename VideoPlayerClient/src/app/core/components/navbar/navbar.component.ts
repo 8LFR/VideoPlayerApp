@@ -4,6 +4,8 @@ import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatIconModule } from '@angular/material/icon'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { HomeComponent } from './pages/home/home.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -13,7 +15,9 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     MatToolbarModule,
     MatIconModule,
     MatSidenavModule,
-    SidebarComponent
+    SidebarComponent,
+    HomeComponent,
+    RouterOutlet
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'

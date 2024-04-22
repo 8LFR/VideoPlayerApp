@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using VideoPlayerAPI.BusinessLogic.Videos.Services;
 
 namespace VideoPlayerAPI;
 
@@ -13,12 +15,22 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             options.UseSqlServer(Configuration.GetConnectionString("VideoPlayerConnectionString")));
 
         services.AddControllers();
+
+        services.AddCors(o => o.AddDefaultPolicy(builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        }));
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         });
+
+        services.AddSingleton<ThumbnailService>();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -35,8 +47,13 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         }
 
         app.UseHttpsRedirection();
+
+        app.UseStaticFiles();
         app.UseRouting();
+
+        app.UseCors();
         app.UseAuthorization();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

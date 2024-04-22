@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using VideoPlayerAPI.BusinessLogic.Videos.Extensions;
+using VideoPlayerAPI.BusinessLogic.Videos.Services;
 using VideoPlayerAPI.Models;
 
 namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
@@ -11,10 +12,11 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
         public required IFormFile File { get; set; }
     }
 
-    internal class UploadVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment) : IRequestHandler<UploadVideoCommand, Video>
+    internal class UploadVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment, ThumbnailService thumbnailService) : IRequestHandler<UploadVideoCommand, Video>
     {
         private readonly VideoPlayerDbContext _dbContext = dbContext;
         private readonly IWebHostEnvironment _environment = environment;
+        private readonly ThumbnailService _thumbnailService = thumbnailService;
 
         public async Task<Video> Handle(UploadVideoCommand command, CancellationToken cancellationToken)
         {
@@ -30,6 +32,8 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
             {
                 await command.File.CopyToAsync(stream);
             }
+
+            await _thumbnailService.GenerateThumbnailAsync(uploadPath);
 
             var video = new Video
             {

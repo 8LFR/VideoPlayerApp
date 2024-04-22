@@ -1,24 +1,21 @@
 import { Component, Input, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatListModule } from '@angular/material/list'; 
-import { MatIconModule } from '@angular/material/icon'; 
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
 export type MenuItem = {
   icon: string;
   label: string;
   route?: string;
-}
+};
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatListModule,
-    MatIconModule
-  ],
+  imports: [CommonModule, MatListModule, MatIconModule, RouterModule],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
   sideNavCollapsed = signal(false);
@@ -28,26 +25,21 @@ export class SidebarComponent {
 
   menuItems = signal<MenuItem[]>([
     {
-      icon: 'dashboard',
-      label: 'Dashboard',
-      route: 'dashboard',
+      icon: 'home',
+      label: 'Home',
+      route: 'home',
     },
     {
-      icon: 'video_library',
-      label: 'Content',
-      route: 'content',
+      icon: 'account_box',
+      label: 'Channel',
+      route: 'channel',
     },
     {
-      icon: 'analytics',
-      label: 'Analytics',
-      route: 'analytics',
-    },
-    {
-      icon: 'comment',
-      label: 'Comments',
-      route: 'comments',
+      icon: 'thumb_up',
+      label: 'Liked videos',
+      route: 'liked-videos',
     },
   ]);
 
-  profilePicSize = computed(() => this.sideNavCollapsed() ? '32' : '100');
+  profilePicSize = computed(() => (this.sideNavCollapsed() ? '32' : '100'));
 }
