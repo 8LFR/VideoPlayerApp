@@ -2,7 +2,7 @@
 
 This project is a clone of YouTube built using the .NET framework for the backend and Angular for the frontend. It aims to replicate the core functionalities of YouTube, allowing users to upload, view, like, comment on, and share videos.
 
-## Features
+## Features (ongoing)
 
 * **User Authentication**: Users can sign up, sign in, and manage their accounts securely.
 * **Video Management**: Upload, edit, and delete videos with ease.
