@@ -12,11 +12,11 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
         public required IFormFile File { get; set; }
     }
 
-    internal class UploadVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment, ThumbnailService thumbnailService) : IRequestHandler<UploadVideoCommand, Video>
+    internal class UploadVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment, IThumbnailService thumbnailService) : IRequestHandler<UploadVideoCommand, Video>
     {
         private readonly VideoPlayerDbContext _dbContext = dbContext;
         private readonly IWebHostEnvironment _environment = environment;
-        private readonly ThumbnailService _thumbnailService = thumbnailService;
+        private readonly IThumbnailService _thumbnailService = thumbnailService;
 
         public async Task<Video> Handle(UploadVideoCommand command, CancellationToken cancellationToken)
         {

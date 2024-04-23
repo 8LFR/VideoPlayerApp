@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VideoPlayerAPI.BusinessLogic.Videos.Services;
+using VideoPlayerAPI.Image;
 
 namespace VideoPlayerAPI;
 
@@ -30,7 +31,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         });
 
-        services.AddSingleton<ThumbnailService>();
+        services.AddSingleton<IThumbnailService, ThumbnailService>();
+        services.AddSingleton<IImageService, ImageService>();
     }
 
     public void Configure(IApplicationBuilder app)
