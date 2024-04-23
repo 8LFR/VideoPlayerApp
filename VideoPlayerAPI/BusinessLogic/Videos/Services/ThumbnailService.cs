@@ -1,59 +1,56 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.WindowsAPICodePack.Shell;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+﻿using Microsoft.WindowsAPICodePack.Shell;
+using VideoPlayerAPI.Image;
 
 namespace VideoPlayerAPI.BusinessLogic.Videos.Services
 {
-    public class ThumbnailService
+    public interface IThumbnailService
     {
-        private readonly ILogger<ThumbnailService> _logger;
+        Task GenerateThumbnailAsync(string filePath);
+    }
 
-        public ThumbnailService(ILogger<ThumbnailService> logger)
-        {
-            _logger = logger;
-        }
+    public class ThumbnailService(ILogger<ThumbnailService> logger, IImageService imageService) : IThumbnailService
+    {
+        private readonly ILogger<ThumbnailService> _logger = logger;
+        private readonly IImageService _imageService = imageService;
 
         public async Task GenerateThumbnailAsync(string filePath)
         {
-            var image = Image.FromFile(filePath);
-            var ratio = image.Width / image.Height;
+            try
+            {
+                var image = GetImage(filePath);
 
-            var thumbnail = ResizeImage(image, 150, 150 * ratio);
+                var resizedImage = _imageService.Resize(image, new Size(640, 360));
 
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
-            var imageFilePath = Path.Combine(Path.GetDirectoryName(filePath), fileName);
+                var directoryPath = Directory.GetParent(filePath).ToString();
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                var imagePath = Path.Combine(directoryPath, $"{fileName}.{resizedImage.ImageType}");
 
-            using var ms = new MemoryStream();
-
-            var xd = imageFilePath + ".png";
-
-            thumbnail.Save(xd);
-
+                using var stream = new FileStream(imagePath, FileMode.Create);
+                await stream.WriteAsync(resizedImage.Bytes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to generate thumbnail for file: {FilePath}", filePath);
+                throw;
+            }
         }
 
-        public static Bitmap ResizeImage(Image image, int width, int height)
+        private static ImageData GetImage(string fileName)
         {
-            var destRect = new Rectangle(0, 0, width, height);
-            var destImage = new Bitmap(width, height);
+            var shellFile = ShellFile.FromFilePath(fileName);
+            var bm = shellFile.Thumbnail.Bitmap;
 
-            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+            using var ms = new MemoryStream();
+            bm.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            ms.Flush();
 
-            using var graphics = Graphics.FromImage(destImage);
+            var image = new ImageData()
+            {
+                Bytes = ms.ToArray(),
+                ImageType = "png"
+            };
 
-            graphics.CompositingMode = CompositingMode.SourceCopy;
-            graphics.CompositingQuality = CompositingQuality.HighQuality;
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.SmoothingMode = SmoothingMode.HighQuality;
-            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-            using var wrapMode = new ImageAttributes();
-
-            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-
-            return destImage;
+            return image;
         }
     }
 }
