@@ -1,4 +1,4 @@
-﻿namespace VideoPlayerAPI.Image
+﻿namespace VideoPlayerAPI.Infrastructure.Image.Models
 {
     public record ImageData
     {

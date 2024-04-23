@@ -4,88 +4,87 @@ using VideoPlayerAPI.BusinessLogic.Videos.Commands;
 using VideoPlayerAPI.BusinessLogic.Videos.Queries;
 using VideoPlayerAPI.Models;
 
-namespace VideoPlayerAPI.Controllers
+namespace VideoPlayerAPI.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class VideosController(IMediator mediator) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class VideosController(IMediator mediator) : ControllerBase
+    private readonly IMediator _mediator = mediator;
+
+    // GET: api/videos
+    [HttpGet]
+    public async Task<ActionResult> GetVideos()
     {
-        private readonly IMediator _mediator = mediator;
+        var query = new GetVideosQuery();
 
-        // GET: api/videos
-        [HttpGet]
-        public async Task<ActionResult> GetVideos()
+        var result = await _mediator.Send(query);
+
+        return Ok(result);
+    }
+
+    // GET: api/videos/{id}
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetVideoById(Guid id)
+    {
+        var query = new GetVideoByIdQuery
         {
-            var query = new GetVideosQuery();
+            Id = id
+        };
 
-            var result = await _mediator.Send(query);
+        var result = await _mediator.Send(query);
 
-            return Ok(result);
+        if (result == null)
+        {
+            return NotFound();
         }
 
-        // GET: api/videos/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetVideoById(int id)
+        return Ok(result);
+    }
+
+    // POST: api/videos/upload
+    [HttpPost("upload")]
+    public async Task<ActionResult> UploadVideo([FromBody] UploadVideoWebModel webModel)
+    {
+        var command = new UploadVideoCommand
         {
-            var query = new GetVideoByIdQuery
-            {
-                VideoId = id
-            };
+            Title = webModel.Title,
+            Description = webModel.Description,
+            VideoData = webModel.VideoData
+        };
 
-            var result = await _mediator.Send(query);
+        var result = await _mediator.Send(command);
 
-            if (result == null)
-            {
-                return NotFound();
-            }
+        return Ok(result);
+    }
 
-            return Ok(result);
-        }
-
-        // POST: api/videos/upload
-        [HttpPost("upload")]
-        public async Task<ActionResult> UploadVideo([FromForm] UploadVideoWebModel webModel)
+    // PUT: api/videos/{id}
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateVideo([FromRoute] Guid id, [FromBody] UpdateVideoWebModel webModel)
+    {
+        var command = new UpdateVideoCommand
         {
-            var command = new UploadVideoCommand
-            {
-                Title = webModel.Title,
-                Description = webModel.Description,
-                File = webModel.File
-            };
+            Id = id,
+            Title = webModel.Title,
+            Description = webModel.Description
+        };
 
-            var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-            return Ok(result);
-        }
+        return Ok(result);
+    }
 
-        // PUT: api/videos/{id}
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateVideo([FromRoute] int id, [FromBody] UpdateVideoWebModel webModel)
+    // DELETE: api/videos/{id}
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteVideo(Guid id)
+    {
+        var command = new DeleteVideoCommand
         {
-            var command = new UpdateVideoCommand
-            {
-                Id = id,
-                Title = webModel.Title,
-                Description = webModel.Description
-            };
+            Id = id
+        };
 
-            var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-            return Ok(result);
-        }
-
-        // DELETE: api/videos/{id}
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteVideo(int id)
-        {
-            var command = new DeleteVideoCommand
-            {
-                VideoId = id
-            };
-
-            var result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
+        return Ok(result);
     }
 }

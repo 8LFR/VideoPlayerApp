@@ -1,38 +1,48 @@
 ﻿using MediatR;
+using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.Image.Storages;
+using VideoPlayerAPI.Infrastructure.Video.Storages;
 
-namespace VideoPlayerAPI.BusinessLogic.Videos.Commands
+namespace VideoPlayerAPI.BusinessLogic.Videos.Commands;
+
+public class DeleteVideoCommand : IRequest<IResult>
 {
-    public class DeleteVideoCommand : IRequest<IResult>
-    {
-        public int VideoId { get; set; }
-    }
+    public Guid Id { get; set; }
+}
 
-    internal class DeleteVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment) : IRequestHandler<DeleteVideoCommand, IResult>
-    {
-        private readonly VideoPlayerDbContext _dbContext = dbContext;
-        private readonly IWebHostEnvironment _environment = environment;
+internal class DeleteVideoCommandHandler(
+    VideoPlayerDbContext dbContext, 
+    IVideoStorage videoStorage, 
+    IImageStorage imageStorage
+    ) : IRequestHandler<DeleteVideoCommand, IResult>
+{
+    private readonly VideoPlayerDbContext _dbContext = dbContext;
+    private readonly IVideoStorage _videoStorage = videoStorage;
+    private readonly IImageStorage _imageStorage = imageStorage;
 
-        public async Task<IResult> Handle(DeleteVideoCommand command, CancellationToken cancellationToken)
+    public async Task<IResult> Handle(DeleteVideoCommand command, CancellationToken cancellationToken)
+    {
+        var video = await _dbContext.Videos.FindAsync(command.Id);
+
+        if (video == null)
         {
-            var video = await _dbContext.Videos.FindAsync(command.VideoId);
-
-            if(video == null)
-            {
-                return Results.NotFound();
-            }
-
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", video.FilePathOrUrl);
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
-            _dbContext.Videos.Remove(video);
-
-            await _dbContext.SaveChangesAsync();
-
-            return Results.Ok();
+            return Results.NotFound();
         }
+
+        _dbContext.Videos.Remove(video);
+
+        if (!string.IsNullOrWhiteSpace(video.VideoFilename))
+        {
+            await _videoStorage.DeleteAsync(video.VideoFilename);
+        }
+
+        if (!string.IsNullOrWhiteSpace(video.ThumbnailFilename))
+        {
+            await _imageStorage.DeleteAsync(video.ThumbnailFilename);
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return Results.Ok();
     }
 }

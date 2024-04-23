@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
 using System.ComponentModel;
 
-namespace VideoPlayerAPI.Image
+namespace VideoPlayerAPI.Infrastructure.Image
 {
     public struct Size(float width, float height)
     {

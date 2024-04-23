@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VideoPlayerAPI.Abstractions;
 
@@ -11,9 +12,11 @@ using VideoPlayerAPI.Abstractions;
 namespace VideoPlayerAPI.Migrations
 {
     [DbContext(typeof(VideoPlayerDbContext))]
-    partial class VideoPlayerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240425143514_UpdateVideoTable")]
+    partial class UpdateVideoTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,9 +38,6 @@ namespace VideoPlayerAPI.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("time");
 
                     b.Property<string>("ThumbnailFilename")
                         .IsRequired()

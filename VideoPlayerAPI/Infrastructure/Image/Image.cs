@@ -1,12 +1,12 @@
 ﻿using SkiaSharp;
 
-namespace VideoPlayerAPI.Image
+namespace VideoPlayerAPI.Infrastructure.Image
 {
     public interface IImage : IDisposable
     {
         float Width { get; }
         float Height { get; }
-        IImage Resize (double width, double height);
+        IImage Resize(double width, double height);
         void Save(Stream stream, ImageFormat imageFormat);
     }
 
