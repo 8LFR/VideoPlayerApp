@@ -1,27 +1,47 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using VideoPlayerAPI.Models;
+using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.Image.Storages;
+using VideoPlayerAPI.Infrastructure.Video.Storages;
 
-namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
+namespace VideoPlayerAPI.BusinessLogic.Videos.Queries;
+
+public class GetVideosQuery : IRequest<IEnumerable<Models.Video>>
 {
-    public class GetVideosQuery : IRequest<IEnumerable<Video>>
-    {
-    }
+}
 
-    internal class GetVideosQueryHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment) : IRequestHandler<GetVideosQuery, IEnumerable<Video>>
-    {
-        private readonly VideoPlayerDbContext _dbContext = dbContext;
-        private readonly IWebHostEnvironment _environment = environment;
+internal class GetVideosQueryHandler(
+    VideoPlayerDbContext dbContext, 
+    IVideoStorage videoStorage, 
+    IImageStorage imageStorage
+    ) : IRequestHandler<GetVideosQuery, IEnumerable<Models.Video>>
+{
+    private readonly VideoPlayerDbContext _dbContext = dbContext;
+    private readonly IVideoStorage _videoStorage = videoStorage;
+    private readonly IImageStorage _imageStorage = imageStorage;
 
-        public async Task<IEnumerable<Video>> Handle(GetVideosQuery query, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Models.Video>> Handle(GetVideosQuery query, CancellationToken cancellationToken)
+    {
+        var videos = await _dbContext.Videos.ToListAsync();
+
+        var models = new List<Models.Video>();
+
+        foreach (var video in videos)
         {
-            var videos = await _dbContext.Videos.ToListAsync();
-            foreach(var video in videos)
+            var model = new Models.Video
             {
-                video.FilePathOrUrl = Path.Combine(_environment.WebRootPath, "uploads", video.FilePathOrUrl);
-            }
+                Id = video.Id,
+                Title = video.Title,
+                Description = video.Description,
+                VideoUrl = _videoStorage.GetVideoUrl(video.VideoFilename),
+                ThumbnailUrl = _imageStorage.GetImageUrl(video.ThumbnailFilename),
+                UploadDate = video.UploadDate,
+                Duration = video.Duration
+            };
 
-            return videos;
+            models.Add(model);
         }
+
+        return models;
     }
 }

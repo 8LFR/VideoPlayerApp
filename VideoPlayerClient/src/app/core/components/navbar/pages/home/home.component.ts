@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { VideoListComponent } from './video-list/video-list.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, VideoListComponent],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using VideoPlayerAPI.BusinessLogic.Videos.Services;
-using VideoPlayerAPI.Image;
+﻿using Microsoft.EntityFrameworkCore;
+using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.AzureStorage;
+using VideoPlayerAPI.Infrastructure.Image.Services;
+using VideoPlayerAPI.Infrastructure.Image.Storages;
+using VideoPlayerAPI.Infrastructure.Video.Helpers;
+using VideoPlayerAPI.Infrastructure.Video.Storages;
 
 namespace VideoPlayerAPI;
 
@@ -31,8 +34,11 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         });
 
-        services.AddSingleton<IThumbnailService, ThumbnailService>();
         services.AddSingleton<IImageService, ImageService>();
+        services.AddSingleton<IVideoStorage, VideoStorage>();
+        services.AddSingleton<IAzureStorageHelper, AzureStorageHelper>();
+        services.AddSingleton<IVideoHelper, VideoHelper>();
+        services.AddSingleton<IImageStorage, ImageStorage>();
     }
 
     public void Configure(IApplicationBuilder app)

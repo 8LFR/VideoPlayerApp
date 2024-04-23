@@ -1,4 +1,6 @@
-﻿namespace VideoPlayerAPI.Image
+﻿using VideoPlayerAPI.Infrastructure.Image.Models;
+
+namespace VideoPlayerAPI.Infrastructure.Image.Services
 {
     public interface IImageService
     {

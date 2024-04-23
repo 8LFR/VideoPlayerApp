@@ -1,56 +1,77 @@
 ﻿using MediatR;
-using VideoPlayerAPI.BusinessLogic.Videos.Extensions;
-using VideoPlayerAPI.BusinessLogic.Videos.Services;
-using VideoPlayerAPI.Models;
+using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Abstractions.Models;
+using VideoPlayerAPI.BusinessLogic.Videos.Mappers;
+using VideoPlayerAPI.Infrastructure.Image.Models;
+using VideoPlayerAPI.Infrastructure.Image.Storages;
+using VideoPlayerAPI.Infrastructure.Video;
+using VideoPlayerAPI.Infrastructure.Video.Helpers;
+using VideoPlayerAPI.Infrastructure.Video.Storages;
 
-namespace VideoPlayerAPI.BusinessLogic.Videos.Queries
+namespace VideoPlayerAPI.BusinessLogic.Videos.Queries;
+
+public class UploadVideoCommand : IRequest<Models.Video>
 {
-    public class UploadVideoCommand : IRequest<Video>
+    public required string Title { get; set; }
+    public required string Description { get; set; }
+    public required VideoData VideoData { get; set; }
+}
+
+internal class UploadVideoCommandHandler(
+    VideoPlayerDbContext dbContext, 
+    IVideoStorage videoStorage,
+    IVideoHelper videoHelper,
+    IImageStorage imageStorage
+    ) : IRequestHandler<UploadVideoCommand, Models.Video>
+{
+    private readonly VideoPlayerDbContext _dbContext = dbContext;
+    private readonly IVideoStorage _videoStorage = videoStorage;
+    private readonly IVideoHelper _videoHelper = videoHelper;
+    private readonly IImageStorage _imageStorage = imageStorage;
+
+    public async Task<Models.Video> Handle(UploadVideoCommand command, CancellationToken cancellationToken)
     {
-        public required string Title { get; set; }
-        public required string Description { get; set; }
-        public required IFormFile File { get; set; }
+        if (command.VideoData == null || command.VideoData.Bytes.Length == 0)
+        {
+            throw new Exception("No file uploaded.");
+        }
+
+        var video = new Video
+        {
+            Id = Guid.NewGuid(),
+            Title = command.Title,
+            Description = command.Description,
+            ContentType = command.VideoData.VideoType,
+            UploadDate = DateTimeOffset.UtcNow,
+        };
+
+        var imageData = await _videoHelper.GenerateThumbnailAsync(video.Id, command.VideoData);
+
+        video.VideoFilename = await SaveVideoAsync(video.Id, command.VideoData);
+        video.ThumbnailFilename = await SaveImageAsync(video.Id, imageData);
+        video.Duration = await _videoHelper.GetVideoDurationAsync(video.Id, command.VideoData);
+
+        _dbContext.Videos.Add(video);
+        await _dbContext.SaveChangesAsync();
+
+        return video.ToModel();
     }
 
-    internal class UploadVideoCommandHandler(VideoPlayerDbContext dbContext, IWebHostEnvironment environment, IThumbnailService thumbnailService) : IRequestHandler<UploadVideoCommand, Video>
+    private async Task<string> SaveVideoAsync(Guid videoId, VideoData videoData)
     {
-        private readonly VideoPlayerDbContext _dbContext = dbContext;
-        private readonly IWebHostEnvironment _environment = environment;
-        private readonly IThumbnailService _thumbnailService = thumbnailService;
+        var newVideoFilename = $"{videoId}.{videoData.VideoType}";
 
-        public async Task<Video> Handle(UploadVideoCommand command, CancellationToken cancellationToken)
-        {
-            if (command.File == null || command.File.Length == 0)
-            {
-                throw new Exception("No file uploaded.");
-            }
+        await _videoStorage.AddAsync(videoData.Bytes, newVideoFilename);
 
-            var filePath = Guid.NewGuid().ToString() + Path.GetExtension(command.File.FileName);
-            var uploadPath = Path.Combine(_environment.WebRootPath, "uploads", filePath);
+        return newVideoFilename;
+    }
 
-            using (var stream = new FileStream(uploadPath, FileMode.Create))
-            {
-                await command.File.CopyToAsync(stream);
-            }
+    private async Task<string> SaveImageAsync(Guid videoId, ImageData imageData)
+    {
+        var newImageFilename = $"{videoId}.{imageData.ImageType}";
 
-            await _thumbnailService.GenerateThumbnailAsync(uploadPath);
+        await _imageStorage.AddAsync(imageData.Bytes, newImageFilename);
 
-            var video = new Video
-            {
-                Title = command.Title,
-                Description = command.Description,
-                FilePathOrUrl = filePath,
-                FileName = command.File.FileName,
-                FileSize = (int)Math.Min(command.File.Length, int.MaxValue),
-                ContentType = command.File.ContentType,
-                UploadDate = DateTime.Now,
-                Duration = VideoExtensions.GetVideoDuration(uploadPath)
-            };
-
-            _dbContext.Videos.Add(video);
-            await _dbContext.SaveChangesAsync();
-
-            return video;
-        }
+        return newImageFilename;
     }
 }
