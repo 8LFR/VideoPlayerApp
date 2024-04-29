@@ -20,12 +20,20 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
         services.AddControllers();
 
-        services.AddCors(o => o.AddDefaultPolicy(builder =>
+        //services.AddCors(o => o.AddDefaultPolicy(builder =>
+        //{
+        //    builder.AllowAnyOrigin()
+        //           .AllowAnyMethod()
+        //           .AllowAnyHeader();
+        //}));
+
+        services.AddCors(options =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        }));
+            options.AddPolicy(name: "CorsPolicy",
+                builder => builder.WithOrigins("https://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+        });
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -59,7 +67,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseStaticFiles();
         app.UseRouting();
 
-        app.UseCors();
+        //app.UseCors();
+        app.UseCors("CorsPolicy");
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

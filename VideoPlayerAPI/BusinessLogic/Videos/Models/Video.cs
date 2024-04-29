@@ -9,4 +9,6 @@ public class Video
     public string ThumbnailUrl { get; init; }
     public DateTimeOffset UploadDate { get; init; }
     public TimeSpan Duration { get; set; }
+
+    public string UploadDateInfo { get; init; }
 }
