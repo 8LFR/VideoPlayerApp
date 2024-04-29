@@ -12,6 +12,8 @@ public interface IVideoHelper
 
 public class VideoHelper : IVideoHelper
 {
+    private const string FfmpegContainerName = "ffmpeg-container";
+
     public async Task<ImageData> GenerateThumbnailAsync(Guid videoId, VideoData videoData, string resolution = "640x360")
     {
         var tempVideoPath = Path.Combine(Path.GetTempPath(), $"{videoId}.mp4");
@@ -20,12 +22,12 @@ public class VideoHelper : IVideoHelper
         {
             File.WriteAllBytes(tempVideoPath, videoData.Bytes);
 
-            var thumbnailPath = Path.Combine(Path.GetTempPath(), $"{videoId}.png");
+            var tempThumbnailPath = Path.Combine(Path.GetTempPath(), $"{videoId}.png");
 
             var ffmpegProcess = new Process();
 
-            ffmpegProcess.StartInfo.FileName = "C:/ffmpeg/bin/ffmpeg.exe";
-            ffmpegProcess.StartInfo.Arguments = $"-i {tempVideoPath} -vf scale={resolution} -ss 00:00:05 -vframes 1 {thumbnailPath}";
+            ffmpegProcess.StartInfo.FileName = "docker-compose";
+            ffmpegProcess.StartInfo.Arguments = $"run --rm -v {Path.GetTempPath()}:/temp {FfmpegContainerName} -i /temp/{videoId}.mp4 -vf scale={resolution} -ss 00:00:05 -vframes 1 /temp/{videoId}.png";
             ffmpegProcess.StartInfo.UseShellExecute = false;
 
             ffmpegProcess.Start();
@@ -34,9 +36,9 @@ public class VideoHelper : IVideoHelper
 
             ffmpegProcess.Close();
 
-            if (File.Exists(thumbnailPath))
+            if (File.Exists(tempThumbnailPath))
             {
-                var thumbnailBytes = File.ReadAllBytes(thumbnailPath);
+                var thumbnailBytes = File.ReadAllBytes(tempThumbnailPath);
 
                 return new ImageData()
                 {
@@ -68,8 +70,8 @@ public class VideoHelper : IVideoHelper
 
             var ffprobeProcess = new Process();
 
-            ffprobeProcess.StartInfo.FileName = "C:/ffmpeg/bin/ffprobe.exe";
-            ffprobeProcess.StartInfo.Arguments = $"-v error -select_streams v:0 -show_entries stream=duration -of default=noprint_wrappers=1:nokey=1 {tempVideoPath}";
+            ffprobeProcess.StartInfo.FileName = "docker-compose";
+            ffprobeProcess.StartInfo.Arguments = $"run --rm -v {Path.GetTempPath()}:/temp --entrypoint=ffprobe {FfmpegContainerName} -v error -select_streams v:0 -show_entries stream=duration -of default=noprint_wrappers=1:nokey=1 /temp/{videoId}.mp4";
             ffprobeProcess.StartInfo.UseShellExecute = false;
             ffprobeProcess.StartInfo.RedirectStandardOutput = true;
 

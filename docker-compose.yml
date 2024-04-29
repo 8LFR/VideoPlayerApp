@@ -13,7 +13,14 @@ services:
       - ./data:/var/opt/mssql/data
     networks:
       - backend
-
+   
+  ffmpeg-container:
+    container_name: ffmpeg-container
+    image: jrottenberg/ffmpeg:latest
+    command: ["ffmpeg", "-version"]
+    networks:
+      - backend
+      
 networks:
   backend:
     driver: bridge
