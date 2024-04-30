@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './core/components/navbar/pages/home/home.component';
-import { ChannelComponent } from './core/components/sidebar/pages/channel/channel.component';
-import { LikedVideosComponent } from './core/components/sidebar/pages/liked-videos/liked-videos.component';
+import { RegisterComponent } from './core/components/register/register.component';
+import { HomeComponent } from './core/components/home/home.component';
 
 export const routes: Routes = [
   {
@@ -14,11 +13,7 @@ export const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: 'channel',
-    component: ChannelComponent,
-  },
-  {
-    path: 'liked-videos',
-    component: LikedVideosComponent,
+    path: 'register',
+    component: RegisterComponent,
   },
 ];

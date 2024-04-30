@@ -36,6 +36,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+/VideoPlayerClient/ssl/
 
 # System files
 .DS_Store

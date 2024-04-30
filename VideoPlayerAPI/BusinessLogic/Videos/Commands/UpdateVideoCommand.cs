@@ -9,6 +9,7 @@ public class UpdateVideoCommand : IRequest<Video>
     public Guid Id { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
+    public Guid RequestedById { get; set; }
 }
 
 internal class UpdateVideoCommandHandler(VideoPlayerDbContext dbContext) : IRequestHandler<UpdateVideoCommand, Video>
@@ -18,11 +19,6 @@ internal class UpdateVideoCommandHandler(VideoPlayerDbContext dbContext) : IRequ
     public async Task<Video> Handle(UpdateVideoCommand command, CancellationToken cancellationToken)
     {
         var video = await _dbContext.Videos.FindAsync(command.Id) ?? throw new NullReferenceException();
-
-        if (command.Title != null)
-        {
-            video.Title = command.Title;
-        }
 
         video.Title = command.Title ?? video.Title;
         video.Description = command.Description ?? video.Description;

@@ -2,17 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using VideoPlayerAPI.BusinessLogic.Videos.Commands;
 using VideoPlayerAPI.BusinessLogic.Videos.Queries;
-using VideoPlayerAPI.Models;
+using VideoPlayerAPI.Models.Videos;
 
-namespace VideoPlayerAPI.Controllers;
+namespace VideoPlayerAPI.Controllers.Videos;
 
-[ApiController]
-[Route("api/[controller]")]
-public class VideosController(IMediator mediator) : ControllerBase
+public class VideosController(IMediator mediator) : BaseApiController
 {
     private readonly IMediator _mediator = mediator;
 
-    // GET: api/videos
+    // GET: api/videosa
     [HttpGet]
     public async Task<ActionResult> GetVideos()
     {
@@ -50,7 +48,8 @@ public class VideosController(IMediator mediator) : ControllerBase
         {
             Title = webModel.Title,
             Description = webModel.Description,
-            VideoData = webModel.VideoData
+            VideoData = webModel.VideoData,
+            RequestedById = webModel.RequestedById
         };
 
         var result = await _mediator.Send(command);

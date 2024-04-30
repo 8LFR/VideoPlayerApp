@@ -1,10 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using VideoPlayerAPI.Abstractions;
-using VideoPlayerAPI.Infrastructure.AzureStorage;
-using VideoPlayerAPI.Infrastructure.Image.Services;
-using VideoPlayerAPI.Infrastructure.Image.Storages;
-using VideoPlayerAPI.Infrastructure.Video.Helpers;
-using VideoPlayerAPI.Infrastructure.Video.Storages;
+﻿using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
 
 namespace VideoPlayerAPI;
 
@@ -15,25 +9,9 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<VideoPlayerDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("VideoPlayerConnectionString")));
-
         services.AddControllers();
 
-        //services.AddCors(o => o.AddDefaultPolicy(builder =>
-        //{
-        //    builder.AllowAnyOrigin()
-        //           .AllowAnyMethod()
-        //           .AllowAnyHeader();
-        //}));
-
-        services.AddCors(options =>
-        {
-            options.AddPolicy(name: "CorsPolicy",
-                builder => builder.WithOrigins("https://localhost:4200")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
-        });
+        services.AddApplicationServices(Configuration);
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -42,11 +20,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
         });
 
-        services.AddSingleton<IImageService, ImageService>();
-        services.AddSingleton<IVideoStorage, VideoStorage>();
-        services.AddSingleton<IAzureStorageHelper, AzureStorageHelper>();
-        services.AddSingleton<IVideoHelper, VideoHelper>();
-        services.AddSingleton<IImageStorage, ImageStorage>();
+        services.AddIdentityServices(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -67,8 +41,10 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseStaticFiles();
         app.UseRouting();
 
-        //app.UseCors();
         app.UseCors("CorsPolicy");
+
+        app.UseAuthentication();
+
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

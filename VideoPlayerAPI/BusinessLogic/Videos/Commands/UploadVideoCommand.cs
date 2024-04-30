@@ -15,6 +15,7 @@ public class UploadVideoCommand : IRequest<Models.Video>
     public required string Title { get; set; }
     public required string Description { get; set; }
     public required VideoData VideoData { get; set; }
+    public required Guid RequestedById { get; set; }
 }
 
 internal class UploadVideoCommandHandler(
@@ -43,6 +44,7 @@ internal class UploadVideoCommandHandler(
             Description = command.Description,
             ContentType = command.VideoData.VideoType,
             UploadDate = DateTimeOffset.UtcNow,
+            UploadedById = command.RequestedById
         };
 
         var imageData = await _videoHelper.GenerateThumbnailAsync(video.Id, command.VideoData);

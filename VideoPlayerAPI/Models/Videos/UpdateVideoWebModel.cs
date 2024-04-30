@@ -1,4 +1,4 @@
-﻿namespace VideoPlayerAPI.Models
+﻿namespace VideoPlayerAPI.Models.Videos
 {
     public class UpdateVideoWebModel
     {

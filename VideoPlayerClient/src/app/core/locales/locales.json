@@ -1,0 +1,24 @@
+{
+    "application-name": "Video Player App",
+    "navbar": {
+        "matches": "Matches",
+        "lists": "Lists",
+        "messages": "Messages",
+        "logout": "Logout",
+        "welcome-user": "Welcome User",
+        "dropdown": {
+            "edit-profile": "Edit Profile",
+            "logout": "Logout"
+        },
+        "login": "Login"
+    },
+    "home": {
+        "header": "Find your match",
+        "description": "Come on in to view your matches... all you need to do is sign up!",
+        "register-button": "Register",
+        "learn-more-button": "Learn more",
+        "register-form": {
+            "header": "Register form goes here"
+        }
+    }
+}
