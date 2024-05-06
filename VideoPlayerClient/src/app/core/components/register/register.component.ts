@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AccountService } from '../../_services/account.service';
 
 @Component({
   selector: 'app-register',
@@ -9,17 +11,25 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent implements OnInit {
+  @Output() cancelRegister = new EventEmitter();
   model: any = {};
+  registerMode = true;
 
-  constructor() {}
+  constructor(private accountService: AccountService, private router: Router) {}
 
   ngOnInit(): void {}
 
   register() {
-    console.log(this.model);
+    this.accountService.register(this.model).subscribe({
+      next: () => {
+        this.cancel();
+      },
+      error: (error) => console.log(error),
+    });
   }
 
   cancel() {
-    console.log('cancelled');
+    this.registerMode = !this.registerMode;
+    this.router.navigate(['/home']);
   }
 }

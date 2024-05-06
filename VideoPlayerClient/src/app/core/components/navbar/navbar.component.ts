@@ -3,8 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../_services/account.service';
 import { CommonModule, NgIf } from '@angular/common';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { Observable, of } from 'rxjs';
-import { User } from '../../_models/user';
 import { RegisterComponent } from '../register/register.component';
 import { Router } from '@angular/router';
 
