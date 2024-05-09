@@ -1,18 +1,18 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 
 namespace VideoPlayerAPI.BusinessLogic.Users.Queries;
 
-public class GetUsersQuery : IRequest<IEnumerable<Models.User>>
+public class GetUsersQuery : IQuery<IEnumerable<Models.User>>
 {
 }
 
-internal class GetUsersQueryHandler(VideoPlayerDbContext dbContext) : IRequestHandler<GetUsersQuery, IEnumerable<Models.User>>
+internal class GetUsersQueryHandler(VideoPlayerDbContext dbContext) : IQueryHandler<GetUsersQuery, IEnumerable<Models.User>>
 {
     private readonly VideoPlayerDbContext _dbContext = dbContext;
 
-    public async Task<IEnumerable<Models.User>> Handle(GetUsersQuery query, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Models.User>>> Handle(GetUsersQuery query, CancellationToken cancellationToken)
     {
         var users = await _dbContext.Users.ToListAsync();
 

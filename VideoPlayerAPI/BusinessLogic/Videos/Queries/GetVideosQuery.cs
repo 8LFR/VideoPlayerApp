@@ -1,12 +1,12 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Infrastructure.Image.Storages;
 using VideoPlayerAPI.Infrastructure.Video.Storages;
 
 namespace VideoPlayerAPI.BusinessLogic.Videos.Queries;
 
-public class GetVideosQuery : IRequest<IEnumerable<Models.Video>>
+public class GetVideosQuery : IQuery<IEnumerable<Models.Video>>
 {
 }
 
@@ -14,13 +14,13 @@ internal class GetVideosQueryHandler(
     VideoPlayerDbContext dbContext, 
     IVideoStorage videoStorage, 
     IImageStorage imageStorage
-    ) : IRequestHandler<GetVideosQuery, IEnumerable<Models.Video>>
+    ) : IQueryHandler<GetVideosQuery, IEnumerable<Models.Video>>
 {
     private readonly VideoPlayerDbContext _dbContext = dbContext;
     private readonly IVideoStorage _videoStorage = videoStorage;
     private readonly IImageStorage _imageStorage = imageStorage;
 
-    public async Task<IEnumerable<Models.Video>> Handle(GetVideosQuery query, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Models.Video>>> Handle(GetVideosQuery query, CancellationToken cancellationToken)
     {
         var videos = await _dbContext.Videos.ToListAsync();
 

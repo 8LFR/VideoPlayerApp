@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -13,9 +13,11 @@ import { AccountService } from '../../_services/account.service';
 export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
   model: any = {};
-  registerMode = true;
 
-  constructor(private accountService: AccountService, private router: Router) {}
+  constructor(
+    private accountService: AccountService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -24,12 +26,11 @@ export class RegisterComponent implements OnInit {
       next: () => {
         this.cancel();
       },
-      error: (error) => console.log(error),
+      error: (error) => this.toastr.error(error.error),
     });
   }
 
   cancel() {
-    this.registerMode = !this.registerMode;
-    this.router.navigate(['/home']);
+    this.cancelRegister.emit(false);
   }
 }

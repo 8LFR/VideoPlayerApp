@@ -1,48 +1,61 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using VideoPlayerAPI.BusinessLogic.Videos.Commands;
+using VideoPlayerAPI.BusinessLogic.Videos.Models;
 using VideoPlayerAPI.BusinessLogic.Videos.Queries;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Models.Videos;
 
 namespace VideoPlayerAPI.Controllers.Videos;
 
-public class VideosController(IMediator mediator) : BaseApiController
+public class VideosController : BaseApiController
 {
-    private readonly IMediator _mediator = mediator;
+    private readonly IMediator _mediator;
+
+    public VideosController(IMediator mediator, ISender sender)
+        : base(sender)
+    {
+        _mediator = mediator;
+    }
 
     // GET: api/videosa
     [HttpGet]
-    public async Task<ActionResult> GetVideos()
+    public async Task<IActionResult> GetVideos(CancellationToken cancellationToken)
     {
         var query = new GetVideosQuery();
 
-        var result = await _mediator.Send(query);
+        Result<IEnumerable<Video>> result = await Sender.Send(query, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return Ok(result.Value);
     }
 
     // GET: api/videos/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetVideoById(Guid id)
+    public async Task<IActionResult> GetVideoById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetVideoByIdQuery
         {
             Id = id
         };
 
-        var result = await _mediator.Send(query);
+        Result<Video> result = await Sender.Send(query, cancellationToken);
 
-        if (result == null)
+        if (result.IsFailure)
         {
-            return NotFound();
+            return HandleFailure(result);
         }
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     // POST: api/videos/upload
     [HttpPost("upload")]
-    public async Task<ActionResult> UploadVideo([FromBody] UploadVideoWebModel webModel)
+    public async Task<IActionResult> UploadVideo([FromBody] UploadVideoWebModel webModel, CancellationToken cancellationToken)
     {
         var command = new UploadVideoCommand
         {
@@ -52,14 +65,22 @@ public class VideosController(IMediator mediator) : BaseApiController
             RequestedById = webModel.RequestedById
         };
 
-        var result = await _mediator.Send(command);
+        Result<Video> result = await Sender.Send(command, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return CreatedAtAction(
+           nameof(GetVideoById),
+           new { id = result.Value.Id },
+           result.Value);
     }
 
     // PUT: api/videos/{id}
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateVideo([FromRoute] Guid id, [FromBody] UpdateVideoWebModel webModel)
+    public async Task<IActionResult> UpdateVideo([FromRoute] Guid id, [FromBody] UpdateVideoWebModel webModel, CancellationToken cancellationToken)
     {
         var command = new UpdateVideoCommand
         {
@@ -68,22 +89,35 @@ public class VideosController(IMediator mediator) : BaseApiController
             Description = webModel.Description
         };
 
-        var result = await _mediator.Send(command);
+        Result<Video> result = await Sender.Send(command, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return CreatedAtAction(
+           nameof(GetVideoById),
+           new { id = result.Value.Id },
+           result.Value);
     }
 
     // DELETE: api/videos/{id}
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteVideo(Guid id)
+    public async Task<IActionResult> DeleteVideo(Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteVideoCommand
         {
             Id = id
         };
 
-        var result = await _mediator.Send(command);
+        Result<Result> result = await Sender.Send(command, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return NoContent();
     }
 }

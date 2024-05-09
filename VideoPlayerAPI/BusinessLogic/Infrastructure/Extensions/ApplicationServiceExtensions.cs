@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Abstractions.Repositories;
+using VideoPlayerAPI.BusinessLogic.Account.Validators;
 using VideoPlayerAPI.Infrastructure.Account;
 using VideoPlayerAPI.Infrastructure.AzureStorage;
 using VideoPlayerAPI.Infrastructure.Image.Services;
@@ -18,10 +21,12 @@ public static class ApplicationServiceExtensions
 
         services.AddCors(options =>
         {
-            options.AddPolicy(name: "CorsPolicy",
-                builder => builder.WithOrigins("https://localhost:4200")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
+            options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.WithOrigins("https://localhost:4200")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
         });
 
         services.AddSingleton<IImageService, ImageService>();
@@ -29,7 +34,9 @@ public static class ApplicationServiceExtensions
         services.AddSingleton<IAzureStorageHelper, AzureStorageHelper>();
         services.AddSingleton<IVideoHelper, VideoHelper>();
         services.AddSingleton<IImageStorage, ImageStorage>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IVideoRepository, VideoRepository>();
 
         return services;
     }

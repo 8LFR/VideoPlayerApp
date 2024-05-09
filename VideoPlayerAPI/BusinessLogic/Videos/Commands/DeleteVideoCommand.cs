@@ -1,11 +1,12 @@
-﻿using MediatR;
-using VideoPlayerAPI.Abstractions;
+﻿using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Abstractions.Repositories;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Infrastructure.Image.Storages;
 using VideoPlayerAPI.Infrastructure.Video.Storages;
 
 namespace VideoPlayerAPI.BusinessLogic.Videos.Commands;
 
-public class DeleteVideoCommand : IRequest<IResult>
+public class DeleteVideoCommand : ICommand<Result>
 {
     public Guid Id { get; set; }
 }
@@ -13,23 +14,20 @@ public class DeleteVideoCommand : IRequest<IResult>
 internal class DeleteVideoCommandHandler(
     VideoPlayerDbContext dbContext, 
     IVideoStorage videoStorage, 
-    IImageStorage imageStorage
-    ) : IRequestHandler<DeleteVideoCommand, IResult>
+    IImageStorage imageStorage,
+    IVideoRepository videoRepository
+    ) : ICommandHandler<DeleteVideoCommand, Result>
 {
     private readonly VideoPlayerDbContext _dbContext = dbContext;
     private readonly IVideoStorage _videoStorage = videoStorage;
     private readonly IImageStorage _imageStorage = imageStorage;
+    private readonly IVideoRepository _videoRepository = videoRepository;
 
-    public async Task<IResult> Handle(DeleteVideoCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Result>> Handle(DeleteVideoCommand command, CancellationToken cancellationToken)
     {
         var video = await _dbContext.Videos.FindAsync(command.Id);
 
-        if (video == null)
-        {
-            return Results.NotFound();
-        }
-
-        _dbContext.Videos.Remove(video);
+        _videoRepository.DeleteVideo(video);
 
         if (!string.IsNullOrWhiteSpace(video.VideoFilename))
         {
@@ -43,6 +41,6 @@ internal class DeleteVideoCommandHandler(
 
         await _dbContext.SaveChangesAsync();
 
-        return Results.Ok();
+        return Result.Success();
     }
 }

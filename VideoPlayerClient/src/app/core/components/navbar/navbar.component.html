@@ -1,19 +1,27 @@
 <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="#">Video Player App</a>
+    <a class="navbar-brand" routerLink="/" routerLinkActive="active"
+      >Video Player App</a
+    >
 
     <ul
       class="navbar-nav me-auto mb-2 mb-md-0"
       *ngIf="accountService.currentUser$ | async"
     >
       <li class="nav-item">
-        <a class="nav-link" href="#">Matches</a>
+        <a class="nav-link" routerLink="/videos" routerLinkActive="active"
+          >Home</a
+        >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Lists</a>
+        <a class="nav-link" routerLink="/channel" routerLinkActive="active"
+          >Channel</a
+        >
       </li>
       <li class="nav-item">
-        <a class="nav-link">Messages</a>
+        <a class="nav-link" routerLink="/liked-videos" routerLinkActive="active"
+          >Liked videos</a
+        >
       </li>
       <li class="nav-item" (click)="logout()">
         <a class="nav-link">Logout</a>
@@ -52,13 +60,6 @@
         placeholder="Password"
       />
       <button class="btn btn-outline-success me-2" type="submit">Login</button>
-      <button
-        class="btn btn-outline-light btn-truncate"
-        type="button"
-        (click)="signupToggle()"
-      >
-        Sign up
-      </button>
     </form>
   </div>
 </nav>

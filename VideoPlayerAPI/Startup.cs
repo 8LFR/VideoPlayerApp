@@ -15,10 +15,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-        });
+
+        services.AddCQRSServices();
 
         services.AddIdentityServices(Configuration);
     }
@@ -39,9 +37,9 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
-        app.UseRouting();
 
         app.UseCors("CorsPolicy");
+        app.UseRouting();
 
         app.UseAuthentication();
 

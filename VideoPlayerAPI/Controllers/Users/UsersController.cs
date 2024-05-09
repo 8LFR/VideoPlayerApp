@@ -1,44 +1,54 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VideoPlayerAPI.BusinessLogic.Users.Models;
 using VideoPlayerAPI.BusinessLogic.Users.Queries;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 
 namespace VideoPlayerAPI.Controllers.Users;
 
 [Authorize]
-public class UsersController(IMediator mediator) : BaseApiController
+public class UsersController : BaseApiController
 {
-    private readonly IMediator _mediator = mediator;
+    public UsersController(ISender sender)
+        : base(sender)
+    {
+    }
 
     // GET: api/users
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult> GetUsers()
+    public async Task<IActionResult> GetUsers(CancellationToken cancellationToken)
     {
         var query = new GetUsersQuery();
 
-        var result = await _mediator.Send(query);
+        Result<IEnumerable<User>> result = await Sender.Send(query, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return Ok(result.Value);
     }
 
     // GET: api/users/{id}
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public async Task<ActionResult> GetUserById(Guid id)
+    public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery
         {
             Id = id
         };
 
-        var result = await _mediator.Send(query);
+        Result<User> result = await Sender.Send(query, cancellationToken);
 
-        if (result == null)
+        if (result.IsFailure)
         {
-            return NotFound();
+            return HandleFailure(result);
         }
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 }

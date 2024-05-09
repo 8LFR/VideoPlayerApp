@@ -1,14 +1,14 @@
-﻿using MediatR;
-using VideoPlayerAPI.Abstractions;
+﻿using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 
 namespace VideoPlayerAPI.BusinessLogic.Users.Queries;
 
-public class GetUserByIdQuery : IRequest<Models.User>
+public class GetUserByIdQuery : IQuery<Models.User>
 {
     public Guid Id { get; set; }
 }
 
-internal class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Models.User>
+internal class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, Models.User>
 {
     private readonly VideoPlayerDbContext _dbContext;
 
@@ -17,7 +17,7 @@ internal class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Model
         _dbContext = dbContext;
     }
 
-    public async Task<Models.User> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<Models.User>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users.FindAsync(query.Id);
 

@@ -1,17 +1,22 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using VideoPlayerAPI.BusinessLogic.Account.Commands;
+using VideoPlayerAPI.BusinessLogic.Users.Models;
+using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Models.Account;
 
 namespace VideoPlayerAPI.Controllers.Account;
 
-public class AccountController(IMediator mediator) : BaseApiController
+public class AccountController : BaseApiController
 {
-    private readonly IMediator _mediator = mediator;
+    public AccountController(ISender sender)
+         : base(sender)
+    {
+    }
 
     // POST: api/account/register
     [HttpPost("register")]
-    public async Task<ActionResult> Register([FromBody] RegisterUserWebModel webModel)
+    public async Task<IActionResult> Register([FromBody] RegisterUserWebModel webModel, CancellationToken cancellationToken)
     {
         var command = new RegisterUserCommand
         {
@@ -19,14 +24,22 @@ public class AccountController(IMediator mediator) : BaseApiController
             Password = webModel.Password
         };
 
-        var result = await _mediator.Send(command);
+        Result<User> result = await Sender.Send(command, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return CreatedAtAction(
+            nameof(Users.UsersController.GetUserById),
+            new { id = result.Value.Id },
+            result.Value);
     }
 
     // POST: api/account/login
     [HttpPost("login")]
-    public async Task<ActionResult> Login([FromBody] LoginUserWebModel webModel)
+    public async Task<IActionResult> Login([FromBody] LoginUserWebModel webModel, CancellationToken cancellationToken)
     {
         var command = new LoginUserCommand
         {
@@ -34,8 +47,13 @@ public class AccountController(IMediator mediator) : BaseApiController
             Password = webModel.Password
         };
 
-        var result = await _mediator.Send(command);
+        Result<UserToken> result = await Sender.Send(command, cancellationToken);
 
-        return Ok(result);
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return Ok(result.Value);
     }
 }
