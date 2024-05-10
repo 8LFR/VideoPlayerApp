@@ -5,11 +5,18 @@ import { CommonModule } from '@angular/common';
 import { AccountService } from './core/_services/account.service';
 import { User } from './core/_models/user';
 import { HomeComponent } from './core/components/home/home.component';
+import { SharedModule } from './core/_modules/shared.module';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, CommonModule, HomeComponent],
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    CommonModule,
+    HomeComponent,
+    SharedModule,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

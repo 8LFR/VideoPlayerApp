@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../_services/account.service';
 import { CommonModule, NgIf } from '@angular/common';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { RegisterComponent } from '../register/register.component';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { SharedModule } from '../../_modules/shared.module';
 
 @Component({
   selector: 'app-navbar',
@@ -13,11 +13,11 @@ import { ToastrService } from 'ngx-toastr';
   imports: [
     FormsModule,
     NgIf,
-    BsDropdownModule,
-    CommonModule,
     RegisterComponent,
     RouterLink,
     RouterLinkActive,
+    SharedModule,
+    CommonModule,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
@@ -36,7 +36,9 @@ export class NavbarComponent implements OnInit {
   login() {
     this.accountService.login(this.model).subscribe({
       next: () => this.router.navigateByUrl('/videos'),
-      error: (error) => this.toastr.error(error.error),
+      error: (error) => {
+        this.toastr.error(error.error.errors[0]?.message), console.log(error);
+      },
     });
   }
 

@@ -1,36 +1,39 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
   <div class="container">
     <a class="navbar-brand" routerLink="/" routerLinkActive="active"
       >Video Player App</a
     >
 
-    <ul
-      class="navbar-nav me-auto mb-2 mb-md-0"
-      *ngIf="accountService.currentUser$ | async"
-    >
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/videos" routerLinkActive="active"
-          >Home</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/channel" routerLinkActive="active"
-          >Channel</a
-        >
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/liked-videos" routerLinkActive="active"
-          >Liked videos</a
-        >
-      </li>
-      <li class="nav-item" (click)="logout()">
-        <a class="nav-link">Logout</a>
-      </li>
+    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+      <ng-container *ngIf="accountService.currentUser$ | async">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/videos" routerLinkActive="active"
+            >Home</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/channel" routerLinkActive="active"
+            >Channel</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/liked-videos"
+            routerLinkActive="active"
+            >Liked videos</a
+          >
+        </li>
+      </ng-container>
     </ul>
 
-    <div class="dropdown" *ngIf="accountService.currentUser$ | async" dropdown>
+    <div
+      class="dropdown"
+      *ngIf="accountService.currentUser$ | async as user"
+      dropdown
+    >
       <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle
-        >Welcome user</a
+        >Welcome {{ user.name | titlecase }}</a
       >
       <div class="dropdown-menu" *dropdownMenu>
         <a class="dropdown-item">Edit Profile</a>
@@ -59,7 +62,7 @@
         type="password"
         placeholder="Password"
       />
-      <button class="btn btn-outline-success me-2" type="submit">Login</button>
+      <button class="btn btn-success" type="submit">Login</button>
     </form>
   </div>
 </nav>

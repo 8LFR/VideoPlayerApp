@@ -14,6 +14,8 @@ public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
     {
         _userRepository = userRepository;
 
+        ClassLevelCascadeMode = CascadeMode.Stop;
+
         RuleFor(command => command.Name)
             .NotEmpty()
             .WithMessage("Username cannot be empty");
