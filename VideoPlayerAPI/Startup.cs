@@ -1,4 +1,8 @@
-﻿using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using VideoPlayer.Web.Seeder;
+using VideoPlayerAPI.Abstractions;
+using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
 
 namespace VideoPlayerAPI;
 
@@ -21,7 +25,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.AddIdentityServices(Configuration);
     }
 
-    public void Configure(IApplicationBuilder app)
+    public async void Configure(IApplicationBuilder app)
     {
         if (Environment.IsDevelopment())
         {
@@ -49,5 +53,22 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         {
             endpoints.MapControllers();
         });
+
+        using var scope = app.ApplicationServices.CreateScope();
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<VideoPlayerDbContext>();
+            var sender = services.GetRequiredService<ISender>();
+            await context.Database.MigrateAsync();
+            await Seed.SeedUsers(context);
+            await Seed.SeedVideos(context, sender);
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetService<ILogger<Startup>>();
+            logger.LogError(ex, "An error occured during migration");
+        }
+
     }
 }
