@@ -23,16 +23,16 @@ public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
             .NotEmpty()
             .WithMessage("Password cannot be empty");
         RuleFor(command => command)
-            .Must(ValidateUser)
+            .MustAsync(ValidateUser)
             .WithMessage("User does not exist");
         RuleFor(command => command)
-            .Must(ValidatePassword)
+            .MustAsync(ValidatePassword)
             .WithMessage("Invalid password");
     }
 
-    private bool ValidateUser(LoginUserCommand command)
+    private async Task<bool> ValidateUser(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        var user = _userRepository.GetUserByName(command.Name);
+        var user = await _userRepository.GetUserByNameAsync(command.Name);
 
         if (user == null)
         {
@@ -42,9 +42,9 @@ public class LoginUserCommandValidator : AbstractValidator<LoginUserCommand>
         return true;
     }
 
-    private bool ValidatePassword(LoginUserCommand command)
+    private async Task<bool> ValidatePassword(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        var user = _userRepository.GetUserByName(command.Name);
+        var user = await _userRepository.GetUserByNameAsync(command.Name);
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
 

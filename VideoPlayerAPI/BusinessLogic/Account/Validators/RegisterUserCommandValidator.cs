@@ -25,7 +25,7 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 
     private bool ValidateUser(RegisterUserCommand command)
     {
-        var user = _userRepository.GetUserByName(command.Name);
+        var user = _userRepository.GetUserByNameAsync(command.Name);
 
         if (user == null)
         {

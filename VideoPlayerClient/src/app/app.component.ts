@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './core/components/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { AccountService } from './core/_services/account.service';
-import { User } from './core/_models/user';
+import { UserToken } from './core/_models/userToken';
 import { HomeComponent } from './core/components/home/home.component';
 import { SharedModule } from './core/_modules/shared.module';
 
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
   setCurrentUser() {
     const userString = localStorage.getItem('user');
     if (!userString) return;
-    const user: User = JSON.parse(userString);
+    const user: UserToken = JSON.parse(userString);
     this.accountService.setCurrentUser(user);
   }
 }

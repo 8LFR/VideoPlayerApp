@@ -25,7 +25,7 @@ public class UpdateVideoCommandValidator : AbstractValidator<UpdateVideoCommand>
 
     private bool ValidateVideo(UpdateVideoCommand command)
     {
-        var video = _videoRepository.GetVideoById(command.Id);
+        var video = _videoRepository.GetVideoByIdAsync(command.Id);
 
         if (video == null)
         {

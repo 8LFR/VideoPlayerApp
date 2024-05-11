@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string PasswordHash { get; set; }
-        public string PasswordSalt { get; set; }
+        public DateTimeOffset Created { get; set; }
+        public DateTimeOffset LastActive { get; set; }
     }
 }

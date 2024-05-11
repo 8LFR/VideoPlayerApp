@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using VideoPlayer.Web.Seeder;
 using VideoPlayerAPI.Abstractions;
 using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
+using VideoPlayerAPI.Errors;
 
 namespace VideoPlayerAPI;
 
@@ -41,6 +42,8 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         app.UseHttpsRedirection();
 
         app.UseStaticFiles();
+
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseCors("CorsPolicy");
         app.UseRouting();

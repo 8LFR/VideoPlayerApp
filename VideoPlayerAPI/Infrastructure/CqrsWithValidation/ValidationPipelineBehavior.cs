@@ -26,8 +26,8 @@ namespace VideoPlayerAPI.Infrastructure.CqrsWithValidation
             }
 
             Error[] errors = _validators
-                .Select(validator => validator.Validate(request))
-                .SelectMany(validationResult => validationResult.Errors)
+                .Select(validator => validator.ValidateAsync(request))
+                .SelectMany(validationResult => validationResult.Result.Errors)
                 .Where(validationFailure => validationFailure is not null)
                 .Select(failure => new Error(
                     failure.PropertyName,

@@ -2,62 +2,62 @@
   {
     "Id": "ded49d14-074e-4bd5-a889-9834d7d8e0d9",
     "Name": "Admin",
-    "Created": "2020-06-24",
-    "LastActive": "2020-06-21"
+    "Created": "2020-06-24T00:00:00+00:00",
+    "LastActive": "2020-06-21T00:00:00+00:00"
   },
   {
     "Id": "f42be1ea-27c2-4ff5-a6fb-9f4e9e60a807",
     "Name": "Bob",
-    "Created": "2019-12-09",
-    "LastActive": "2020-05-06"
+    "Created": "2019-12-09T00:00:00+00:00",
+    "LastActive": "2020-05-06T00:00:00+00:00"
   },
   {
     "Id": "d1823004-a571-4035-a911-ab14d801ab95",
     "Name": "Tom",
-    "Created": "2019-08-10",
-    "LastActive": "2020-05-12"
+    "Created": "2019-08-10T00:00:00+00:00",
+    "LastActive": "2020-05-12T00:00:00+00:00"
   },
   {
     "Id": "8deb8788-5f92-474b-b5aa-420be22888da",
     "Name": "Lois",
-    "Created": "2019-04-24",
-    "LastActive": "2020-06-17"
+    "Created": "2019-04-24T00:00:00+00:00",
+    "LastActive": "2020-06-17T00:00:00+00:00"
   },
   {
     "Id": "5ff9b3c1-4439-4c0d-a941-8ad9e6b424ca",
     "Name": "Ruthie",
-    "Created": "2019-04-30",
-    "LastActive": "2020-06-21"
+    "Created": "2019-04-30T00:00:00+00:00",
+    "LastActive": "2020-06-21T00:00:00+00:00"
   },
   {
     "Id": "418d0410-1d6c-46d4-9e67-c7ba80d9f6af",
     "Name": "Todd",
-    "Created": "2019-04-29",
-    "LastActive": "2020-05-16"
+    "Created": "2019-04-29T00:00:00+00:00",
+    "LastActive": "2020-05-16T00:00:00+00:00"
   },
   {
     "Id": "68596cfe-6735-4ad2-bb98-f7cb3708fcc3",
     "Name": "Porter",
-    "Created": "2020-04-05",
-    "LastActive": "2020-06-23"
+    "Created": "2020-04-05T00:00:00+00:00",
+    "LastActive": "2020-06-23T00:00:00+00:00"
   },
   {
     "Id": "7926124a-3af6-463d-94d3-0da22c11448b",
     "Name": "Mayo",
-    "Created": "2020-03-14",
-    "LastActive": "2020-05-17"
+    "Created": "2020-03-14T00:00:00+00:00",
+    "LastActive": "2020-05-17T00:00:00+00:00"
   },
   {
     "Id": "5dfff932-5697-496a-8078-d0d056f5b8cc",
     "Name": "Skinner",
-    "Created": "2019-01-28",
-    "LastActive": "2020-06-07"
+    "Created": "2019-01-28T00:00:00+00:00",
+    "LastActive": "2020-06-07T00:00:00+00:00"
   },
   {
     "Id": "c8a5281a-de0a-4821-8396-a6f3c771e2b5",
     "Name": "Davis",
-    "Created": "2020-02-25",
-    "LastActive": "2020-06-11"
+    "Created": "2020-02-25T00:00:00+00:00",
+    "LastActive": "2020-06-11T00:00:00+00:00"
   }
 ]
 

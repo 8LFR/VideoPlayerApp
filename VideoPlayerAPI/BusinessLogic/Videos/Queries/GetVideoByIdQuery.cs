@@ -1,4 +1,5 @@
-﻿using VideoPlayerAPI.Abstractions;
+﻿using VideoPlayerAPI.Abstractions.Repositories;
+using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
 using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Infrastructure.Image.Storages;
 using VideoPlayerAPI.Infrastructure.Video.Storages;
@@ -11,18 +12,17 @@ public class GetVideoByIdQuery : IQuery<Models.Video>
 }
 
 internal class GetVideoByIdQueryHandler(
-    VideoPlayerDbContext dbContext, 
-    IVideoStorage videoStorage, 
-    IImageStorage imageStorage
-    ) : IQueryHandler<GetVideoByIdQuery, Models.Video>
+    IVideoStorage videoStorage,
+    IImageStorage imageStorage,
+    IVideoRepository videoRepository) : IQueryHandler<GetVideoByIdQuery, Models.Video>
 {
-    private readonly VideoPlayerDbContext _dbContext = dbContext;
     private readonly IVideoStorage _videoStorage = videoStorage;
     private readonly IImageStorage _imageStorage = imageStorage;
+    private readonly IVideoRepository _videoRepository = videoRepository;
 
     public async Task<Result<Models.Video>> Handle(GetVideoByIdQuery query, CancellationToken cancellationToken)
     {
-        var video = await _dbContext.Videos.FindAsync(query.Id);
+        var video = await _videoRepository.GetVideoByIdAsync(query.Id);
 
         var model = new Models.Video
         {
@@ -32,7 +32,8 @@ internal class GetVideoByIdQueryHandler(
             VideoUrl = _videoStorage.GetVideoUrl(video.VideoFilename),
             ThumbnailUrl = _imageStorage.GetImageUrl(video.ThumbnailFilename),
             UploadDate = video.UploadDate,
-            Duration = video.Duration
+            Duration = video.Duration,
+            UploadDateInfo = video.UploadDate.GetCreationInfo()
         };
 
         return model;

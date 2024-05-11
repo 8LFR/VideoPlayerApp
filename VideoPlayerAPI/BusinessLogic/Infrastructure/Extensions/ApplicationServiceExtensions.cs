@@ -23,7 +23,7 @@ public static class ApplicationServiceExtensions
         {
             options.AddPolicy("CorsPolicy", builder =>
             {
-                builder.WithOrigins("https://localhost:4200")
+                builder.WithOrigins("https://localhost:4200", "https://localhost:7089")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });

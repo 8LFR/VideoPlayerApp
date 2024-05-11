@@ -37,7 +37,7 @@ export class NavbarComponent implements OnInit {
     this.accountService.login(this.model).subscribe({
       next: () => this.router.navigateByUrl('/videos'),
       error: (error) => {
-        this.toastr.error(error.error.errors[0]?.message), console.log(error);
+        this.toastr.error(error[0].message);
       },
     });
   }

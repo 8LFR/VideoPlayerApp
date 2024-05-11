@@ -19,7 +19,7 @@ namespace VideoPlayerAPI.BusinessLogic.Videos.Validators
 
         private bool ValidateVideo(DeleteVideoCommand command)
         {
-            var video = _videoRepository.GetVideoById(command.Id);
+            var video = _videoRepository.GetVideoByIdAsync(command.Id);
 
             if (video == null)
             {
