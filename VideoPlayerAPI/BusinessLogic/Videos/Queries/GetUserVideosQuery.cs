@@ -7,26 +7,29 @@ using VideoPlayerAPI.Infrastructure.Video.Storages;
 
 namespace VideoPlayerAPI.BusinessLogic.Videos.Queries;
 
-public class GetVideosQuery : IQuery<IEnumerable<Models.Video>>
+public class GetUserVideosQuery : IQuery<IEnumerable<Models.Video>>
 {
+    public Guid Id { get; set; }
 }
 
-internal class GetVideosQueryHandler(
+internal class GetUserVideosQueryHandler(
     IVideoStorage videoStorage,
     IImageStorage imageStorage,
-    IVideoRepository videoRepository) : IQueryHandler<GetVideosQuery, IEnumerable<Models.Video>>
+    IVideoRepository videoRepository) : IQueryHandler<GetUserVideosQuery, IEnumerable<Models.Video>>
 {
     private readonly IVideoStorage _videoStorage = videoStorage;
     private readonly IImageStorage _imageStorage = imageStorage;
     private readonly IVideoRepository _videoRepository = videoRepository;
 
-    public async Task<Result<IEnumerable<Models.Video>>> Handle(GetVideosQuery query, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Models.Video>>> Handle(GetUserVideosQuery query, CancellationToken cancellationToken)
     {
         var videos = await _videoRepository.GetAllAsync();
 
+        var userVideos = videos.Where(v => v.UploadedById == query.Id);
+
         var models = new List<Models.Video>();
 
-        foreach (var video in videos)
+        foreach (var video in userVideos)
         {
             var avatarFilename = _imageStorage.GetUserAvatarUrl(video.UploadedBy.AvatarFilename);
 

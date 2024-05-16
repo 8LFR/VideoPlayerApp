@@ -1,4 +1,5 @@
 ﻿using VideoPlayerAPI.Abstractions.Repositories;
+using VideoPlayerAPI.BusinessLogic.Account.Mappers;
 using VideoPlayerAPI.BusinessLogic.Infrastructure.Extensions;
 using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
 using VideoPlayerAPI.Infrastructure.Image.Storages;
@@ -24,6 +25,8 @@ internal class GetVideoByIdQueryHandler(
     {
         var video = await _videoRepository.GetVideoByIdAsync(query.Id);
 
+        var avatarFilename = _imageStorage.GetUserAvatarUrl(video.UploadedBy.AvatarFilename);
+
         var model = new Models.Video
         {
             Id = video.Id,
@@ -33,7 +36,8 @@ internal class GetVideoByIdQueryHandler(
             ThumbnailUrl = _imageStorage.GetImageUrl(video.ThumbnailFilename),
             UploadDate = video.UploadDate,
             Duration = video.Duration,
-            UploadDateInfo = video.UploadDate.GetCreationInfo()
+            UploadDateInfo = video.UploadDate.GetCreationInfo(),
+            UploadedBy = video.UploadedBy.ToModelWithAvatar(avatarFilename)
         };
 
         return model;

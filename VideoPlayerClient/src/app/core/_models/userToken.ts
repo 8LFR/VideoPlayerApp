@@ -1,5 +1,5 @@
 export interface UserToken {
-    name: string;
-    token: string;
-  }
-  
+  id: string;
+  name: string;
+  token: string;
+}

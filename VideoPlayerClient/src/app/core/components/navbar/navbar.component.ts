@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../_services/account.service';
 import { CommonModule, NgIf } from '@angular/common';
@@ -6,6 +6,7 @@ import { RegisterComponent } from '../register/register.component';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { SharedModule } from '../../_modules/shared.module';
+import { LoginUser, User } from '../../_models/user';
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +24,12 @@ import { SharedModule } from '../../_modules/shared.module';
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
-  model: any = {};
+  @Input() user: User | undefined;
+  
+  form: LoginUser = {
+    name: '',
+    password: '',
+  };
 
   constructor(
     public accountService: AccountService,
@@ -34,7 +40,12 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {}
 
   login() {
-    this.accountService.login(this.model).subscribe({
+    const model = {
+      name: this.form.name,
+      password: this.form.password,
+    };
+
+    this.accountService.login(model).subscribe({
       next: () => this.router.navigateByUrl('/videos'),
       error: (error) => {
         this.toastr.error(error[0].message);

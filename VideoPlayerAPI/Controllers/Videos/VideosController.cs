@@ -18,11 +18,30 @@ public class VideosController : BaseApiController
         _mediator = mediator;
     }
 
-    // GET: api/videosa
+    // GET: api/videos
     [HttpGet]
     public async Task<IActionResult> GetVideos(CancellationToken cancellationToken)
     {
         var query = new GetVideosQuery();
+
+        Result<IEnumerable<Video>> result = await Sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return HandleFailure(result);
+        }
+
+        return Ok(result.Value);
+    }
+
+    // GET: api/videos/user/{id}
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetUserVideos(Guid userId, CancellationToken cancellationToken)
+    {
+        var query = new GetUserVideosQuery
+        {
+            Id = userId
+        };
 
         Result<IEnumerable<Video>> result = await Sender.Send(query, cancellationToken);
 

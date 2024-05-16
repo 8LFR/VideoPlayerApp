@@ -1,1 +1,5 @@
-<p>videos works!</p>
+<div class="row">
+  <div class="col-3" *ngFor="let video of videos">
+    <app-video-tile [video]="video"></app-video-tile>
+  </div>
+</div>

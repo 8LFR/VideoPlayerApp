@@ -1,0 +1,30 @@
+<div class="video-container" *ngIf="video">
+  <div class="video-wrapper">
+    <video controls autoplay="true">
+      <source src="{{ video.videoUrl }}" type="video/mp4" />
+    </video>
+  </div>
+  <div class="video-details">
+    <span class="title">{{ video.title }}</span>
+    <div class="user-with-action-buttons">
+      <div class="user">
+        <img src="{{ video.uploadedBy.avatarUrl }}" alt="XD" />
+        <span class="name">{{ video.uploadedBy.name }}</span>
+      </div>
+      <div class="actions">
+        <button class="like-button" (click)="toggleLike()">
+          <span class="icon">
+            <i [ngClass]="likeButtonClass">thumb_up</i>
+          </span>
+          2,3k
+        </button>
+        <button class="dislike-button" (click)="toggleDislike()">
+          <span class="icon">
+            <i [ngClass]="dislikeButtonClass">thumb_down</i>
+          </span>
+          100k
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

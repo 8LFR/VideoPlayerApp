@@ -1,5 +1,6 @@
 ﻿using VideoPlayerAPI.Abstractions.Repositories;
 using VideoPlayerAPI.Infrastructure.CqrsWithValidation;
+using VideoPlayerAPI.Infrastructure.Image.Storages;
 
 namespace VideoPlayerAPI.BusinessLogic.Users.Queries;
 
@@ -8,9 +9,10 @@ public class GetUserByIdQuery : IQuery<Models.User>
     public Guid Id { get; set; }
 }
 
-internal class GetUserByIdQueryHandler(IUserRepository userRepository) : IQueryHandler<GetUserByIdQuery, Models.User>
+internal class GetUserByIdQueryHandler(IUserRepository userRepository, IImageStorage imageStorage) : IQueryHandler<GetUserByIdQuery, Models.User>
 {
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly IImageStorage _imageStorage = imageStorage;
 
     public async Task<Result<Models.User>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
@@ -21,7 +23,8 @@ internal class GetUserByIdQueryHandler(IUserRepository userRepository) : IQueryH
             Id = user.Id,
             Name = user.Name,
             Created = user.Created,
-            LastActive = user.LastActive
+            LastActive = user.LastActive,
+            AvatarUrl = _imageStorage.GetUserAvatarUrl(user.AvatarFilename)
         };
 
         return model;

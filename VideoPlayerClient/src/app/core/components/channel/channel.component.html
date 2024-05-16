@@ -1,1 +1,70 @@
-<p>channel works!</p>
+<div class="row" *ngIf="user">
+  <div class="col-4">
+    <div class="card">
+      <img
+        src="{{ user.avatarUrl }}"
+        alt="{{ user.name }}"
+        class="card-img-top img-thumbnail"
+      />
+      <div class="card-body">
+        <div>
+          <strong>Description:</strong>
+          <p>
+            Super idol 的笑容都没你的甜 八月正午的阳光都没你耀眼 热爱105度的你
+            滴滴清纯的蒸馏水
+          </p>
+        </div>
+        <div>
+          <strong>Last active:</strong>
+          <p>{{ user.lastActive }}</p>
+        </div>
+        <div>
+          <strong>Joining date:</strong>
+          <p>{{ user.created }}</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="btn-group d-flex">
+          <button class="btn btn-primary">Like</button>
+          <button class="btn btn-success">Messages</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-8">
+    <tabset class="member-tabset">
+      <tab heading="Videos">
+        <button class="btn btn-primary mb-2" (click)="openUploadVideoModal()">
+          Upload video
+        </button>
+        <div class="row">
+          <div class="col-4" *ngFor="let video of videos">
+            <div class="video">
+              <div class="thumbnail" routerLink="/videos/{{ video.id }}">
+                <img src="{{ video.thumbnailUrl }}" alt="{{ video.title }}" />
+                <span class="minit">{{ video.duration }}</span>
+              </div>
+              <div class="video-info">
+                <div class="user">
+                  <img src="{{ video.uploadedBy.avatarUrl }}" alt="" />
+                </div>
+                <div class="text">
+                  <span class="title">{{ video.title }}</span>
+                  <span>{{ video.uploadedBy.name }}</span>
+                  <div>
+                    <span class="views">{{ video.views }} views</span>
+                    <span>{{ video.uploadDateInfo }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Messages">
+        <p>elo żelo</p>
+      </tab>
+    </tabset>
+  </div>
+</div>

@@ -12,6 +12,7 @@ public interface IImageStorage
     Task DeleteDirectoryAsync(string path);
     string GetImageUrl(string path);
     ImageData GetImageAsync(string path);
+    string GetUserAvatarUrl(string filename);
 }
 
 public class ImageStorage(IAzureStorageHelper storageHelper) : IImageStorage
@@ -39,5 +40,15 @@ public class ImageStorage(IAzureStorageHelper storageHelper) : IImageStorage
             ImageType = Path.GetExtension(path),
             Bytes = blobBytes
         };
+    }
+
+    public string GetUserAvatarUrl(string filename)
+    {
+        if (string.IsNullOrWhiteSpace(filename))
+        {
+            return _storageHelper.GetFilePath($"Users/default-avatar.png");
+        }
+
+        return GetImageUrl($"Users/{filename}");
     }
 }

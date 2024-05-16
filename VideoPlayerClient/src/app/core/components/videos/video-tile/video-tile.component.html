@@ -1,0 +1,28 @@
+<!-- <div class="video-tile" *ngIf="video">
+    <img src="{{video.thumbnailUrl}}" alt="{{video.title}}">
+    <div class="video-details">
+        <h3>{{video.title}}</h3>
+        <p>{{video.uploadedBy.name}}</p>
+        <p>{{video.uploadDateInfo}}</p>
+    </div>
+</div> -->
+
+<div class="video" *ngIf="video">
+  <div class="thumbnail" routerLink="/videos/{{ video.id }}">
+    <img src="{{ video.thumbnailUrl }}" alt="{{ video.title }}" />
+    <span class="minit">{{ video.duration }}</span>
+  </div>
+  <div class="video-info">
+    <div class="user">
+      <img src="{{ video.uploadedBy.avatarUrl }}" alt="" />
+    </div>
+    <div class="text">
+      <span class="title">{{ video.title }}</span>
+      <span>{{ video.uploadedBy.name }}</span>
+      <div>
+        <span class="views">{{ video.views }} views</span>
+        <span>{{ video.uploadDateInfo }}</span>
+      </div>
+    </div>
+  </div>
+</div>

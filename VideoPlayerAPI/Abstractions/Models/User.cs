@@ -8,5 +8,6 @@
         public byte[] PasswordSalt { get; set; }
         public DateTimeOffset Created { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset LastActive { get; set; } = DateTimeOffset.UtcNow;
+        public string AvatarFilename { get; set; }
     }
 }

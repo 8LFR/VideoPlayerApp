@@ -7,6 +7,8 @@ import { authGuard } from './core/_guards/auth.guard';
 import { TestErrorComponent } from './core/components/errors/test-error/test-error.component';
 import { NotFoundComponent } from './core/components/errors/not-found/not-found.component';
 import { ServerErrorComponent } from './core/components/errors/server-error/server-error.component';
+import { VideoDetailsComponent } from './core/components/videos/video-details/video-details.component';
+import { ChannelDetailsComponent } from './core/components/channel/channel-details/channel-details.component';
 
 export const routes: Routes = [
   {
@@ -15,22 +17,30 @@ export const routes: Routes = [
   },
   {
     path: '',
-    runGuardsAndResolvers: 'always',
-    canActivate: [authGuard],
     children: [
       {
         path: 'videos',
         component: VideosComponent,
       },
       {
+        path: 'videos/:id',
+        component: VideoDetailsComponent,
+      },
+      {
         path: 'channel',
         component: ChannelComponent,
+      },
+      {
+        path: 'channel/:id',
+        component: ChannelDetailsComponent,
       },
       {
         path: 'liked-videos',
         component: LikedVideosComponent,
       },
     ],
+    runGuardsAndResolvers: 'always',
+    canActivate: [authGuard],
   },
   {
     path: 'errors',

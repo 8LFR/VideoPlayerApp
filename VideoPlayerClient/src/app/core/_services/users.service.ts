@@ -16,21 +16,6 @@ export class UsersService {
   }
 
   getUser(id: string) {
-    return this.http.get<User>(
-      this.baseUrl + 'users/' + id,
-      this.getHttpOptions()
-    );
-  }
-
-  getHttpOptions() {
-    const userString = localStorage.getItem('user');
-    if (!userString) return;
-    const user = JSON.parse(userString);
-
-    return {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + user.token,
-      }),
-    };
+    return this.http.get<User>(this.baseUrl + 'users/' + id);
   }
 }
