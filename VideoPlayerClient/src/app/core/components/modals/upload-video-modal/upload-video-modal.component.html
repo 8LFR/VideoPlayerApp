@@ -1,37 +1,52 @@
-<form #registerForm="ngForm" autocomplete="off">
-  <h2 class="text-center text-primary">Sign up</h2>
-  <hr />
-  <div class="mb-3">
-    <input
-      type="text"
-      class="form-control"
-      name="title"
-      [(ngModel)]="form.title"
-      placeholder="Title"
-    />
-  </div>
-  <div class="mb-3">
-    <input
-      type="text"
-      class="form-control"
-      name="description"
-      [(ngModel)]="form.description"
-      placeholder="Description"
-    />
-  </div>
-  <div class="mb-3">
-    <input
-      type="file"
-      class="form-control"
-      name="videoData"
-      [(ngModel)]="form.videoData"
-      placeholder="XDDDD"
-    />
-  </div>
-  <div class="text-center">
-    <button class="btn btn-success me-2" type="submit">Register</button>
-    <!-- <button class="btn btn-default me-2" type="button" (click)="cancel()">
-      Cancel
-    </button> -->
-  </div>
-</form>
+<div class="form-container">
+  <form #uploadForm="ngForm" autocomplete="off" id="uploadForm">
+    <h2 class="text-center text-primary">Upload video</h2>
+    <hr />
+    <div class="mb-3">
+      <input
+        type="text"
+        id="title"
+        name="title"
+        class="form-control"
+        required
+        [(ngModel)]="form.title"
+        placeholder="Title"
+      />
+    </div>
+    <div class="mb-3">
+      <textarea
+        form="uploadForm"
+        name="description"
+        id="description"
+        cols="37"
+        rows="3"
+        wrap="soft"
+        class="form-control"
+        [(ngModel)]="form.description"
+        placeholder="Description"
+        required
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <input
+        type="file"
+        class="form-control"
+        name="videoData"
+        (change)="onFileSelected($event)"
+        required
+      />
+    </div>
+    <div class="text-center">
+      <button
+        class="btn btn-success me-2"
+        type="submit"
+        (click)="uploadVideo()"
+      >
+        Upload
+      </button>
+      <button class="btn btn-default me-2" type="button" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

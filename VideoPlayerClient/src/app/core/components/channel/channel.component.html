@@ -35,9 +35,18 @@
   <div class="col-8">
     <tabset class="member-tabset">
       <tab heading="Videos">
-        <button class="btn btn-primary mb-2" (click)="openUploadVideoModal()">
+        <button
+          class="btn btn-primary mb-2"
+          *ngIf="isUserOwnChannel()"
+          (click)="openUploadVideoModal()"
+        >
           Upload video
         </button>
+
+        <!-- <app-upload-video-modal
+          (videoUploaded)="onVideoUploaded()"
+        ></app-upload-video-modal> -->
+
         <div class="row">
           <div class="col-4" *ngFor="let video of videos">
             <div class="video">

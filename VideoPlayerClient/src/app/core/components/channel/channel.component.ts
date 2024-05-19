@@ -9,12 +9,21 @@ import { VideosService } from '../../_services/videos.service';
 import { Video } from '../../_models/video';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { UploadVideoModalComponent } from '../modals/upload-video-modal/upload-video-modal.component';
 
 @Component({
   selector: 'app-channel',
   standalone: true,
-  imports: [NgIf, NgFor, ChannelDetailsComponent, TabsModule, RouterLink],
+  imports: [
+    NgIf,
+    NgFor,
+    ChannelDetailsComponent,
+    TabsModule,
+    RouterLink,
+    UploadVideoModalComponent,
+    MatDialogModule,
+  ],
   templateUrl: './channel.component.html',
   styleUrls: ['./channel.component.scss'],
 })
@@ -25,7 +34,7 @@ export class ChannelComponent implements OnInit {
 
   constructor(
     private usersService: UsersService,
-    private accountService: AccountService,
+    public accountService: AccountService,
     private videosService: VideosService,
     public dialog: MatDialog
   ) {}
@@ -48,7 +57,21 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  isUserOwnChannel() {
+    return this.accountService.currentUserValue?.id == this.user.id;
+  }
+
   openUploadVideoModal() {
-    const dialogRef = this.dialog.open(UploadVideoModalComponent);
+    const dialogRef = this.dialog.open(UploadVideoModalComponent, {
+      width: '400px',
+    });
+
+    dialogRef.componentInstance.videoUploaded.subscribe(() => {
+      this.onVideoUploaded();
+    });
+  }
+
+  onVideoUploaded() {
+    this.getUserVideos();
   }
 }

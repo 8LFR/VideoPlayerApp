@@ -74,6 +74,7 @@ public class VideosController : BaseApiController
 
     // POST: api/videos/upload
     [HttpPost("upload")]
+    [RequestSizeLimit(300_000_000_000)]
     public async Task<IActionResult> UploadVideo([FromBody] UploadVideoWebModel webModel, CancellationToken cancellationToken)
     {
         var command = new UploadVideoCommand
